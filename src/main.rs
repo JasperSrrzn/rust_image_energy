@@ -7,7 +7,7 @@ fn main() {
             let image_result = reader.decode();
             match image_result {
                 Ok(image) => {
-                    println!("{}", image.width())
+                    println!("The image width is {}", image.width())
                 }
                 Err(e) => {
                     panic!("{}", e)
