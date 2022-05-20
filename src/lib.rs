@@ -1,0 +1,1 @@
+pub mod energy_of_image;
