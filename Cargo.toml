@@ -1,6 +1,6 @@
 [package]
 name = "image_energy"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Jasper Sarrazin"]
 description = "Library crate for calculating energy of an image"
