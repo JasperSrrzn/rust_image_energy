@@ -10,6 +10,13 @@ pub struct ImageWrapper {
 
 impl ImageWrapper {
 
+    // constructor of the wrapper
+    pub fn new(image: DynamicImage) -> Self {
+        ImageWrapper {
+            original: Some(image)
+        }
+    }
+
     /// loads the wrapper with an image stored at the path argument
     pub fn from_file(path: &str) -> Self {
         let result = ImageReader::open(path);
