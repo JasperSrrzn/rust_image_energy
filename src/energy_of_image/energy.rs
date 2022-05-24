@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
 use image::{DynamicImage, GenericImage, GenericImageView, Rgba};
-use crate::energy_of_image::pixel::{get_left, get_top, get_right, get_bottom};
 
+use crate::energy_of_image::pixel::{get_bottom, get_left, get_right, get_top};
+
+/// This returns the energy of the image, but scaled to visualize as an image
 pub fn get_energy_image(image: &DynamicImage) -> DynamicImage {
     let mut max: u32 = 0;
     let mut min: u32 = u32::MAX;
@@ -25,6 +27,16 @@ pub fn get_energy_image(image: &DynamicImage) -> DynamicImage {
         energy_image.put_pixel(*x, *y, rgba);
     });
     energy_image
+}
+
+/// This returns the energy of the image, not scaled.
+pub fn get_energy_grid(image: &DynamicImage) -> HashMap<(u32, u32), u32> {
+    let mut energies = HashMap::new();
+    image.pixels().for_each(|pixel: (u32, u32, Rgba<u8>)| {
+        let energy = calculate_energy_at(&pixel, &image);
+        energies.insert((pixel.0, pixel.1), energy);
+    });
+    energies
 }
 
 
