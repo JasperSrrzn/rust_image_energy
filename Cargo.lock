@@ -247,6 +247,7 @@ name = "image_energy"
 version = "0.1.2"
 dependencies = [
  "image",
+ "rayon",
 ]
 
 [[package]]

@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 use image::{DynamicImage, GenericImage, GenericImageView, Rgba};
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 use crate::energy_of_image::pixel::{get_bottom, get_left, get_right, get_top};
 
@@ -10,15 +12,15 @@ pub fn get_energy_image(image: &DynamicImage) -> DynamicImage {
     let mut min: u32 = u32::MAX;
     let mut energies = HashMap::new();
     let mut energy_image = image.clone();
-    image.pixels().for_each(|pixel: (u32, u32, Rgba<u8>)| {
-        let energy = calculate_energy_at(&pixel, &image);
+    image.pixels().for_each(|(x, y, _)| {
+        let energy = calculate_energy_at(&x, &y, &image);
         if energy > max {
             max = energy;
         }
         if energy < min {
             min = energy;
         }
-        energies.insert((pixel.0, pixel.1), energy);
+        energies.insert((x, y), energy);
     });
 
     energies.iter().for_each(|((x, y), energy)| {
@@ -32,19 +34,19 @@ pub fn get_energy_image(image: &DynamicImage) -> DynamicImage {
 /// This returns the energy of the image, not scaled.
 pub fn get_energy_grid(image: &DynamicImage) -> HashMap<(u32, u32), u32> {
     let mut energies = HashMap::new();
-    image.pixels().for_each(|pixel: (u32, u32, Rgba<u8>)| {
-        let energy = calculate_energy_at(&pixel, &image);
-        energies.insert((pixel.0, pixel.1), energy);
+    image.pixels().for_each(|(x, y, _)| {
+        let energy = calculate_energy_at(&x, &y, &image);
+        energies.insert((x, y), energy);
     });
     energies
 }
 
 
-fn calculate_energy_at(pixel: &(u32, u32, Rgba<u8>), image: &DynamicImage) -> u32 {
-    let left = get_left(&pixel, &image);
-    let right = get_right(&pixel, &image);
-    let top = get_top(&pixel, &image);
-    let bottom = get_bottom(&pixel, &image);
+fn calculate_energy_at(x: &u32, y: &u32, image: &DynamicImage) -> u32 {
+    let left = get_left(x, y, &image);
+    let right = get_right(x, y, &image);
+    let top = get_top(x, y, &image);
+    let bottom = get_bottom(x, y, &image);
     let dx = calculate_energy(left, right);
     let dy = calculate_energy(top, bottom);
     dx + dy
