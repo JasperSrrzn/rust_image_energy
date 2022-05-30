@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 
 use image::{DynamicImage, GenericImage, GenericImageView, Rgba};
@@ -31,14 +32,12 @@ pub fn get_energy_image(image: &DynamicImage) -> DynamicImage {
     energy_image
 }
 
-/// This returns the energy of the image, not scaled.
+//This returns the energy_grid of the image in a HashMap
 pub fn get_energy_grid(image: &DynamicImage) -> HashMap<(u32, u32), u32> {
-    let mut energies = HashMap::new();
-    image.pixels().for_each(|(x, y, _)| {
-        let energy = calculate_energy_at(&x, &y, &image);
-        energies.insert((x, y), energy);
-    });
-    energies
+    (0..image.height()).into_par_iter().flat_map(|y| {
+        (0..image.width()).into_par_iter().map(|x| ((x,y), calculate_energy_at(&x, &y, image))).collect::<HashMap<(u32,u32), u32>>()
+    }).collect()
+
 }
 
 
